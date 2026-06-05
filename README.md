@@ -20,11 +20,16 @@ Dos servidores Ubuntu ubicados en **zonas de disponibilidad distintas** (Washing
 | Componente | Detalle |
 |---|---|
 | Región | `us-east` (Washington DC) |
-| VPC | 1 VPC con security group (HTTP/HTTPS/SSH) |
+| VPC | 1 VPC con security group para las VSI (HTTP/HTTPS/SSH) |
 | Subnets | 2 subnets, una en `us-east-1` y otra en `us-east-2` |
 | Cómputo | 2 VSI Ubuntu 24.04, perfil `bx3dc-2x10` (balanced confidential computing) |
-| Balanceador | Application Load Balancer público, round-robin |
+| Balanceador | Application Load Balancer público, round-robin, con su propio security group |
 | Backup | Política con plan diario, retención de 7 días |
+
+> **Total: 22 recursos.** El balanceador tiene un security group dedicado (separado del
+> de las VSI) que permite el tráfico HTTP entrante desde internet. Esta separación entre
+> el security group del LB y el de las máquinas es una buena práctica: el LB es la única
+> superficie expuesta y las VSI quedan detrás.
 
 ## Estructura del repositorio
 
@@ -93,13 +98,45 @@ A continuación, el despliegue real de este proyecto documentado con capturas.
 
 <img src="docs/screenshots/06-ssh-key-variable.png" alt="Variable ssh_key_name" height="420">
 
-**7. Generar el plan**: Terraform valida y reporta los 19 recursos a crear.
+**7. Generar el plan**: Terraform valida y reporta los recursos a crear (el plan inicial mostró 19; tras añadir el security group dedicado del balanceador, el total final fue de 22).
 
 ![Plan generado](docs/screenshots/07-plan.png)
 
 **8. Estimación de costo** antes de aplicar (los recursos se cobran por uso medido, no por el total mensual mostrado).
 
 <img src="docs/screenshots/08-estimacion-costo.png" alt="Estimación de costo" height="420">
+
+**9. Aplicar el plan**: Terraform crea los recursos en IBM Cloud y el workspace pasa a estado *Activo*.
+
+![Plan aplicado](docs/screenshots/09-apply.png)
+
+**10. La VPC** queda disponible con sus 2 subnets.
+
+![VPC](docs/screenshots/10-vpc.png)
+
+**11. Las dos máquinas virtuales** corriendo, una en cada zona (`10.241.0.4` en us-east-1 y `10.241.64.4` en us-east-2).
+
+![Instancias](docs/screenshots/11-instancias.png)
+
+**12. El Application Load Balancer** activo y público.
+
+![Load Balancer](docs/screenshots/12-loadbalancer.png)
+
+**13. La política de backup** aplicada a los volúmenes (seleccionados por el tag `backup-policy:daily`).
+
+![Política de backup](docs/screenshots/13-backup.png)
+
+**14. Verificación del balanceo**: al acceder al hostname del balanceador, el tráfico se reparte entre las dos máquinas en zonas distintas.
+
+<img src="docs/screenshots/14-web1.png" alt="Respuesta web-1" width="48%"> <img src="docs/screenshots/14-web2.png" alt="Respuesta web-2" width="48%">
+
+**15. Destruir los recursos** al terminar (Acciones → Destruir recursos) para controlar el costo.
+
+<img src="docs/screenshots/15-destroy-accion.png" alt="Acción destruir" width="380">
+
+**16. Destrucción completada**: los 22 recursos eliminados, cerrando el ciclo de vida completo.
+
+![Destrucción completada](docs/screenshots/16-destroy-completado.png)
 
 ## Opción B — Desplegar en local
 
