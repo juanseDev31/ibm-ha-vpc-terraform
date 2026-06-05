@@ -1,0 +1,13 @@
+# Copia este archivo a terraform.tfvars y ajusta los valores.
+# En IBM Cloud Schematics, estos valores se configuran en la pestaña "Variables".
+
+region         = "us-east"      # Washington DC
+prefix         = "ha-demo"
+resource_group = "Default"
+zone_1         = "us-east-1"
+zone_2         = "us-east-2"
+vsi_profile    = "bx3dc-2x10"   # balanced confidential computing, 2 vCPU / 10 GiB
+image_name     = "ibm-ubuntu-24-04-2-minimal-amd64-1"
+
+# OBLIGATORIO: el nombre de una SSH key que ya exista en tu cuenta de IBM Cloud
+ssh_key_name = "mi-ssh-key"
