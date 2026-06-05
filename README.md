@@ -4,7 +4,7 @@ Despliegue de una arquitectura web de **alta disponibilidad** en IBM Cloud, tota
 
 Dos servidores Ubuntu ubicados en **zonas de disponibilidad distintas** (Washington DC, `us-east`), detrás de un **Application Load Balancer** público, con **políticas de backup** automáticas para sus volúmenes.
 
-![Diagrama de arquitectura](docs/architecture.svg)
+![Diagrama de arquitectura](docs/architecture.png)
 
 ## ¿Qué demuestra este proyecto?
 
